@@ -11,7 +11,7 @@ filereader = pd.read_csv('./training_set_rel3.csv', encoding="ISO-8859-1")
 example_essay = filereader['essay'][1]
 stop_words = set(stopwords.words('english'))
 word_tokens = word_tokenize(example_essay)
-filtered_essay = [w for w in word_tokens if not w in stop_words]
+#filtered_essay = [w for w in word_tokens if not w in stop_words]
 filtered_essay = []
 wrong_spellings = []
 for w in word_tokens:
@@ -31,6 +31,7 @@ for w in word_tokens:
 
 ##Build a freq distribution of words
 all_words = nltk.FreqDist(filtered_essay)
+#print(all_words)
 print(all_words.most_common(25))
         
 
