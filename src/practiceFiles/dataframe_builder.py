@@ -31,12 +31,11 @@ essayreader = filereader.loc[:1782,["essay","domain1_score"]]
 ##  after each iteration.  
 filtered_essay = []
 wrong_spellings = []
+count_wrong_spellings = []
+count_words = []
 for row in essayreader['essay']:    
     word_tokens = word_tokenize(row)
-    #for w in word_tokens:
-     #   if w not in word_set:
-      #      wrong_spellings.append(w)       
-        
+    
     for w in word_tokens:
         if w not in stop_words:
             if w not in word_set:
@@ -44,13 +43,14 @@ for row in essayreader['essay']:
             else:
                 filtered_essay.append(w)
     
-    print(len(wrong_spellings))
-    ## reset array
-    wrong_spellings = []
-    print("\n\n")
-    #print(filtered_essay)
-    #print("\n\n")
-    #print(row)
-    #print("\n\n\n")
+    count_wrong_spellings.append(len(wrong_spellings))
+    count_words.append(len(filtered_essay))
+    ## reset arrays
+    filtered_essay = []
+    wrong_spellings = []       
+
+## These two add two new columns in essayreader dataframe
+essayreader['wrong_spellings'] = count_wrong_spellings
+essayreader['word_count'] = count_words
         
 
