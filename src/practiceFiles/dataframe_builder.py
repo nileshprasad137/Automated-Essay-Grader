@@ -65,10 +65,18 @@ for row in essay_reader['essay']:
     tags = nltk.pos_tag(word_tokens)
     counts = Counter(tag for word,tag in tags)
     total_pos = sum(counts.values()) 
-    normalized_noun_count = round(((counts['NN']+counts['NNS']+counts['NNP']+counts['NNPS'])/total_pos)*100)    
-    normalized_adjective_count = round(((counts['JJ']+counts['JJR']+counts['JJS'])/total_pos)*100)
-    normalized_verb_count = round(((counts['VB']+counts['VBD']+counts['VBG']+counts['VBN']+counts['VBP']+counts['VBZ'])/total_pos)*100)
-    normalized_adverb_count = round(((counts['RB']+counts['RBR']+counts['RBS'])/total_pos)*100)
-    print(str(normalized_noun_count) + " " + str(normalized_adjective_count) + " " + str(normalized_verb_count) + " " + str(normalized_adverb_count))
-    print("\n\n")
-    
+    noun_count = round(((counts['NN']+counts['NNS']+counts['NNP']+counts['NNPS'])/total_pos)*100)    
+    adjective_count = round(((counts['JJ']+counts['JJR']+counts['JJS'])/total_pos)*100)
+    verb_count = round(((counts['VB']+counts['VBD']+counts['VBG']+counts['VBN']+counts['VBP']+counts['VBZ'])/total_pos)*100)
+    adverb_count = round(((counts['RB']+counts['RBR']+counts['RBS'])/total_pos)*100)
+    ##print(str(normalized_noun_count) + " " + str(normalized_adjective_count) + " " + str(normalized_verb_count) + " " + str(normalized_adverb_count))
+    ##print("\n\n")
+    normalized_noun_count.append(noun_count)
+    normalized_adjective_count.append(adjective_count)
+    normalized_verb_count.append(verb_count)
+    normalized_adverb_count.append(adverb_count)
+
+essay_reader['normalized_noun_count'] = normalized_noun_count
+essay_reader['normalized_adjective_count'] = normalized_adjective_count
+essay_reader['normalized_verb_count'] = normalized_verb_count
+essay_reader['normalized_adverb_count'] = normalized_adverb_count    
