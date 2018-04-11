@@ -4,15 +4,16 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.corpus import brown
+from collections import Counter
 word_list = brown.words()
 ##  List of all words in English. Doesn't contain all words though!
 word_set = set(word_list)
 ##  Set of all stopwords in English
 stop_words = set(stopwords.words('english'))
 ##  Complete dataset loaded in filereader
-filereader = pd.read_csv('./training_set_rel3.csv', encoding="ISO-8859-1")
+file_reader = pd.read_csv('./training_set_rel3.csv', encoding="ISO-8859-1")
 ##  Set-1 Essays loaded onto essayreader along with their scores.(Scale 2-12)
-essayreader = filereader.loc[:1782,["essay","domain1_score"]]
+essay_reader = file_reader.loc[:1782,["essay","domain1_score"]]
 
 ##  Write regular expressions to match Named Entity Recognition
 ##  The entitities identified by NER are: 
@@ -31,9 +32,15 @@ essayreader = filereader.loc[:1782,["essay","domain1_score"]]
 ##  after each iteration.  
 filtered_essay = []
 wrong_spellings = []
+normalized_noun_count = []
+normalized_adverb_count = []
+normalized_verb_count = []
+normalized_adjective_count = []
+ 
 count_wrong_spellings = []
 count_words = []
-for row in essayreader['essay']:    
+
+for row in essay_reader['essay']:    
     word_tokens = word_tokenize(row)
     
     for w in word_tokens:
@@ -50,7 +57,18 @@ for row in essayreader['essay']:
     wrong_spellings = []       
 
 ## These two add two new columns in essayreader dataframe
-essayreader['wrong_spellings'] = count_wrong_spellings
-essayreader['word_count'] = count_words
-        
+essay_reader['wrong_spellings'] = count_wrong_spellings
+essay_reader['word_count'] = count_words
 
+for row in essay_reader['essay']:
+    word_tokens = word_tokenize(row)
+    tags = nltk.pos_tag(word_tokens)
+    counts = Counter(tag for word,tag in tags)
+    total_pos = sum(counts.values()) 
+    normalized_noun_count = round(((counts['NN']+counts['NNS']+counts['NNP']+counts['NNPS'])/total_pos)*100)    
+    normalized_adjective_count = round(((counts['JJ']+counts['JJR']+counts['JJS'])/total_pos)*100)
+    normalized_verb_count = round(((counts['VB']+counts['VBD']+counts['VBG']+counts['VBN']+counts['VBP']+counts['VBZ'])/total_pos)*100)
+    normalized_adverb_count = round(((counts['RB']+counts['RBR']+counts['RBS'])/total_pos)*100)
+    print(str(normalized_noun_count) + " " + str(normalized_adjective_count) + " " + str(normalized_verb_count) + " " + str(normalized_adverb_count))
+    print("\n\n")
+    
