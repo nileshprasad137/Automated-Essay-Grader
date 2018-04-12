@@ -5,6 +5,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.corpus import brown
 from collections import Counter
+import matplotlib.pyplot as plt
 word_list = brown.words()
 ##  List of all words in English. Doesn't contain all words though!
 word_set = set(word_list)
@@ -13,7 +14,8 @@ stop_words = set(stopwords.words('english'))
 ##  Complete dataset loaded in filereader
 file_reader = pd.read_csv('./training_set_rel3.csv', encoding="ISO-8859-1")
 ##  Set-1 Essays loaded onto essayreader along with their scores.(Scale 2-12)
-essay_reader = file_reader.loc[:1782,["essay","domain1_score"]]
+essay_reader = file_reader.loc[:1782,["essay"]]
+training_df = file_reader.loc[:1782,["domain1_score"]]
 
 ##  Write regular expressions to match Named Entity Recognition
 ##  The entitities identified by NER are: 
@@ -81,4 +83,33 @@ for row in essay_reader['essay']:
 essay_reader['normalized_noun_count'] = normalized_noun_count
 essay_reader['normalized_adjective_count'] = normalized_adjective_count
 essay_reader['normalized_verb_count'] = normalized_verb_count
-essay_reader['normalized_adverb_count'] = normalized_adverb_count    
+essay_reader['normalized_adverb_count'] = normalized_adverb_count   
+
+training_df['wrong_spellings'] = count_wrong_spellings
+training_df['word_count'] = count_words
+training_df['normalized_noun_count'] = normalized_noun_count
+training_df['normalized_adjective_count'] = normalized_adjective_count
+training_df['normalized_verb_count'] = normalized_verb_count
+training_df['normalized_adverb_count'] = normalized_adverb_count  
+
+
+## Train and test.
+X = training_df.iloc[:, 1:].values
+y = training_df.iloc[:, 0].values
+
+# Splitting the dataset into the Training set and Test set
+from sklearn.cross_validation import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+# Fitting Multiple Linear Regression to the Training set
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+
+# Predicting the Test set results
+y_pred = regressor.predict(X_test)
+ 
+print('Coefficients: \n', regressor.coef_)
+# The mean squared error
+print("Mean squared error: %.2f" % np.mean((regressor.predict(X_test) - y_test) ** 2))
+# Explained variance score: 1 is perfect prediction
+print('Variance score: %.2f' % regressor.score(X_test, y_test))
