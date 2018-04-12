@@ -6,6 +6,8 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import brown
 from collections import Counter
 import matplotlib.pyplot as plt
+import sklearn
+#from sklearn.metrics import accuracy_score
 word_list = brown.words()
 ##  List of all words in English. Doesn't contain all words though!
 word_set = set(word_list)
@@ -100,30 +102,17 @@ y = training_df.iloc[:, 0].values
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
-# Fitting Multiple Linear Regression to the Training set
-from sklearn.linear_model import LinearRegression
-regressor = LinearRegression()
+
+# Fitting Decision Tree Regression to the dataset
+from sklearn.tree import DecisionTreeRegressor
+regressor = DecisionTreeRegressor(random_state = 0)
 regressor.fit(X_train, y_train)
 
-# Predicting the Test set results
+# Predicting a new result
 y_pred = regressor.predict(X_test)
- 
-
-"""
-print('Coefficients: \n', regressor.coef_)
-# The mean squared error
-print("Mean squared error: %.2f" % np.mean((regressor.predict(X_test) - y_test) ** 2))
-# Explained variance score: 1 is perfect prediction
-print('Variance score: %.2f' % regressor.score(X_test, y_test))
-"""
-"""
-from sklearn.metrics import explained_variance_score
-explained_variance_score(y_test, y_pred, multioutput='uniform_average')
-"""
-
 
 from sklearn.metrics import mean_squared_error
 mse = mean_squared_error(y_test, y_pred)
 """
-mse = 1.98
+mse=3
 """
