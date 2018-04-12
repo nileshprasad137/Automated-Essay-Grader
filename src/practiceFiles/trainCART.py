@@ -116,3 +116,9 @@ mse = mean_squared_error(y_test, y_pred)
 """
 mse=3
 """
+from sklearn.metrics import r2_score
+adjusted_r_squared = r2_score(y_test, y_pred, multioutput='variance_weighted')
+print(adjusted_r_squared)
+"""
+-0.479649628616
+"""
