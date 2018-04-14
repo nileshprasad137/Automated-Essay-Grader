@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import nltk
 from nltk.corpus import stopwords
+from nltk.tokenize import RegexpTokenizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import brown
 from collections import Counter
@@ -45,8 +46,9 @@ count_wrong_spellings = []
 count_words = []
 
 for row in essay_reader['essay']:    
-    word_tokens = word_tokenize(row)
-    
+    #word_tokens = word_tokenize(row)
+    tokenizer = RegexpTokenizer(r'\w+')
+    word_tokens = tokenizer.tokenize(row)
     for w in word_tokens:
         if w not in stop_words:
             if w not in word_set:
