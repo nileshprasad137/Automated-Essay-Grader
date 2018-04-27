@@ -7,8 +7,19 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import brown
 from collections import Counter
 import matplotlib.pyplot as plt
+import re
+#import string
+"""
 word_list = brown.words()
 ##  List of all words in English. Doesn't contain all words though!
+word_set = set(word_list)
+"""
+word_list = []
+with open('./words_alpha.txt') as f:
+    for line in f:
+        word = line.split(None, 1)[0]
+        word_list.append(word.lower())
+        
 word_set = set(word_list)
 ##  Set of all stopwords in English
 stop_words = set(stopwords.words('english'))
@@ -47,8 +58,15 @@ count_words = []
 
 for row in essay_reader['essay']:    
     #word_tokens = word_tokenize(row)
-    tokenizer = RegexpTokenizer(r'\w+')
+    ner = re.findall("[@]\w+", row)
+    temp = []
+    for item in ner:
+        temp.append(item[1:])
+    ner_set = set(temp)
+    tokenizer = RegexpTokenizer(r'\w+')    
     word_tokens = tokenizer.tokenize(row)
+    word_tokens = [e for e in word_tokens if e not in ner_set]
+    temp_word_tokens=word_tokens
     for w in word_tokens:
         if w not in stop_words:
             if w not in word_set:
@@ -56,6 +74,10 @@ for row in essay_reader['essay']:
             else:
                 filtered_essay.append(w)
     
+    #temp_word_tokens =
+    #= "string. With. Punctuation?"
+    #table = string.maketrans("","") 
+    #new_s = s.translate(table, string.punctuation)      # Output: string without punctuation
     normalized_wrong_spellings = round((len(wrong_spellings)/len(word_tokens))*100)
     count_wrong_spellings.append(normalized_wrong_spellings)
     normalized_word_count = round((len(filtered_essay)/len(word_tokens))*100)
@@ -84,17 +106,17 @@ for row in essay_reader['essay']:
     normalized_verb_count.append(verb_count)
     normalized_adverb_count.append(adverb_count)
 
-essay_reader['normalized_noun_count'] = normalized_noun_count
-essay_reader['normalized_adjective_count'] = normalized_adjective_count
-essay_reader['normalized_verb_count'] = normalized_verb_count
-essay_reader['normalized_adverb_count'] = normalized_adverb_count   
+#essay_reader['normalized_noun_count'] = normalized_noun_count
+#essay_reader['normalized_adjective_count'] = normalized_adjective_count
+#essay_reader['normalized_verb_count'] = normalized_verb_count
+#essay_reader['normalized_adverb_count'] = normalized_adverb_count   
 
 training_df['wrong_spellings'] = count_wrong_spellings
 training_df['word_count'] = count_words
-training_df['normalized_noun_count'] = normalized_noun_count
-training_df['normalized_adjective_count'] = normalized_adjective_count
-training_df['normalized_verb_count'] = normalized_verb_count
-training_df['normalized_adverb_count'] = normalized_adverb_count  
+#training_df['normalized_noun_count'] = normalized_noun_count
+#training_df['normalized_adjective_count'] = normalized_adjective_count
+#training_df['normalized_verb_count'] = normalized_verb_count
+#training_df['normalized_adverb_count'] = normalized_adverb_count  
 
 
 ## Train and test.
@@ -105,14 +127,14 @@ y = training_df.iloc[:, 0].values
 from sklearn.cross_validation import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 # Fitting Multiple Linear Regression to the Training set
-"""
+
 from sklearn.linear_model import LinearRegression
 regressor = LinearRegression()
 regressor.fit(X_train, y_train)
 
 # Predicting the Test set results
 y_pred = regressor.predict(X_test)
-"""
+
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
@@ -121,30 +143,39 @@ model = make_pipeline(PolynomialFeatures(2), LinearRegression())
 model.fit(X_train, y_train)
 # Predicting the Test set results
 y_pred = model.predict(X_test)
- 
 
 """
-print('Coefficients: \n', regressor.coef_)
-# The mean squared error
-print("Mean squared error: %.2f" % np.mean((regressor.predict(X_test) - y_test) ** 2))
-# Explained variance score: 1 is perfect prediction
-print('Variance score: %.2f' % regressor.score(X_test, y_test))
+from sklearn.ensemble import RandomForestRegressor
+#from sklearn.datasets import make_regression
+#X, y = make_regression(n_features=3, n_informative=2,
+ #                     random_state=0, shuffle=False)
+regr = RandomForestRegressor(random_state=10, n_estimators=2000)
+regr.fit(X_train, y_train)
+#print(regr.feature_importances_)
+y_pred = regr.predict(X_test)
+print(regr.feature_importances_)
 """
+
+#print('Coefficients: \n', regressor.coef_)
+# The mean squared error
+#print("Mean squared error: %.2f" % np.mean((regressor.predict(X_test) - y_test) ** 2))
+# Explained variance score: 1 is perfect prediction
+#print('Variance score: %.2f' % regressor.score(X_test, y_test))
+
 """
 from sklearn.metrics import explained_variance_score
 explained_variance_score(y_test, y_pred, multioutput='uniform_average')
 """
 
-
+"""
 from sklearn.metrics import mean_squared_error
 mse = mean_squared_error(y_test, y_pred)
 """
-mse = 1.98
-"""
+#mse = 1.98
+
 
 from sklearn.metrics import r2_score
 adjusted_r_squared = r2_score(y_test, y_pred, multioutput='variance_weighted')
 print(adjusted_r_squared)
-"""
-0.180289823093
-"""
+
+# 0.180289823093

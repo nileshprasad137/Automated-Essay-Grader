@@ -21,7 +21,7 @@ file_reader = pd.read_csv('./training_set_rel3.csv', encoding="ISO-8859-1")
 ##  Set-1 Essays loaded onto essayreader along with their scores.(Scale 2-12)
 #essay_reader = file_reader.loc[:1782,["essay"]]
 #training_df = file_reader.loc[:1782,["domain1_score"]]
-essay_reader = file_reader['essay'][12297]
+essay_reader = file_reader['essay'][12300]
 
 
 ##  Write regular expressions to match Named Entity Recognition
